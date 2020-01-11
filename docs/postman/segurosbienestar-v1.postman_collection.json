@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "d0e4b8ad-9639-45c9-b851-1dc06b48f0fa",
+		"name": "segurosbienestar-v1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "{{baseUrl}}/api/accounts",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"jose\",\n  \"lastName\": \"perez garcia\",\n  \"email\": \"joseperezgarcia22@yopmail.com\",\n  \"password\": \"ggtrreysvfk\",\n  \"gender\": \"0\",\n  \"DOB\": \"1980-01-01\",\n  \"address\": \"rua alta, nº25\",\n  \"postalCode\": \"15147\",\n  \"phone\": \"1234567890\",\n  \"bornIn\": \"Spain\",\n  \"userStatus\": \"1\"\n }\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/accounts",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{baseUrl}}/api/logins",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "455a5949-ab33-449f-a929-59d1afcb2a60",
+						"exec": [
+							"pm.environment.set(\"accessToken\", pm.response.json().accessToken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"joseperezgarcia22@yopmail.com\",\n  \"password\": \"ggtrreysvfk\"\n}\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/logins",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"logins"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{baseUrl}}/api/logins UserNotRegistered",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "455a5949-ab33-449f-a929-59d1afcb2a60",
+						"exec": [
+							"pm.environment.set(\"accessToken\", pm.response.json().accessToken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"joseperezgarcia22@yopmail.com\",\n  \"password\": \"123456\"\n}\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/logins",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"logins"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
