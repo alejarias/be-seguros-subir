@@ -51,19 +51,20 @@ CREATE TABLE IF NOT EXISTS `segurosbienestar`.`policies` (
   `policy_number` CHAR(10) NOT NULL,
   `user_id` CHAR(36) NOT NULL,
   `policy_type` TINYINT(1) NOT NULL,
+  `policy_price` DECIMAL(10,2) NOT NULL,
   `policy_period` VARCHAR(10) NOT NULL,
   `eoi_url` VARCHAR(255) DEFAULT NULL,
   `created_at` DATETIME NOT NULL,
   `updated_at` DATETIME DEFAULT NULL,
   `finished_at` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_policies_users_idx` (`user_id` ASC),
+  INDEX `fk_policies_user_id_user_id_idx` (`user_id` ASC),
   CONSTRAINT `fk_policies_user_id_user_id`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `segurosbienestar`.`users` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
+  FOREIGN KEY (`user_id`)
+  REFERENCES `segurosbienestar`.`users` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION)
+  ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 

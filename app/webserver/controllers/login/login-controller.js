@@ -22,7 +22,7 @@ async function login(req, res, next) {
         return res.status(400).send(e);
     }
 
-    const sqlQuery = `SELECT id, email, password
+    const sqlQuery = `SELECT id, email, password, user_status
     FROM users
     WHERE email = '${accountData.email}' AND deleted_at IS NULL`;
 
@@ -49,7 +49,7 @@ async function login(req, res, next) {
 
         const payloadJwt = {
             userId: user.id,
-            // userStatus: '1',
+            userStatus: user.user_status,
         };
 
         const jwtExpiresIn = parseInt(process.env.AUTH_ACCESS_TOKEN_TTL);

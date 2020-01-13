@@ -4,30 +4,21 @@ const bcrypt = require('bcrypt');
 const Joi = require('@hapi/joi');
 const mysqlPool = require('../../../database/mysql-pool');
 const sendgridMail = require('@sendgrid/mail');
-const uuidV4 = require('uuid/v4');
 
-sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-async function sendWelcomeEmail(email) {
+async function sendUpdatedDataEmail(email) {
     const [username,] = email.split('@');
     const msg = {
         to: email,
         from: 'seguros-bienestar@yopmail.com',
-        subject: 'Bienvenid@ a Seguros Bienestar',
-        text: `Bienvenid@ ${username} a Seguros Bienestar`,
-        html: `<strong>Bienvenid@ ${username} a Seguros Bienestar</strong>`,
+        subject: 'Se han actualizado sus datos en Seguros Bienestar',
+        text: `Estimad@ ${username}: se han actualizado sus datos en Seguros Bienestar`,
+        html: `<strong>Estimad@ ${username}: se han actualizado sus datos en Seguros Bienestar</strong>`,
     };
 
     const data = await sendgridMail.send(msg);
 
     return data;
 }
-
-/*
-gender: 0 male, 1 female
-userStatus: 0 inactive, 1 user, 2 admin
-*/
-
 
 async function validateSchema(payload) {
     const schema = Joi.object({
@@ -41,52 +32,74 @@ async function validateSchema(payload) {
         postalCode: Joi.string().required(),
         phone: Joi.string().required(),
         bornIn: Joi.string().required(),
-        userStatus: Joi.number().integer().min(1).max(2).required(),
     });
 
     Joi.assert(payload, schema);
 }
 
-async function createAccount(req, res, next) {
-    const accountData = { ...req.body };
+async function updateAccountData(req, res, next) {
+    const { userId } = req.claims;
+
+    const accountData = {
+        ...req.body,
+    };
     try {
         await validateSchema(accountData);
     } catch (e) {
+        console.error(e);
         return res.status(400).send(e);
     }
-
-    const now = new Date();
-    const createdAt = now.toISOString().replace('T', ' ').substring(0, 19);
-    const userId = uuidV4();
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const securePassword = await bcrypt.hash(accountData.password, 10);
 
     let connection;
+
     try {
         connection = await mysqlPool.getConnection();
-        await connection.query('INSERT INTO users SET ?', {
-            id: userId,
-            first_name: accountData.firstName,
-            last_name: accountData.lastName,
-            email: accountData.email,
-            password: securePassword,
-            gender: accountData.gender,
-            dob: accountData.DOB,
-            address: accountData.address,
-            postal_code: accountData.postalCode,
-            phone: accountData.phone,
-            born_in: accountData.bornIn,
-            user_status: accountData.userStatus,
-            created_at: createdAt,
-        });
+
+        const sqlUpdateAccountData = `UPDATE users 
+        SET first_name = ?,
+        last_name = ?,
+        email = ?,
+        password = ?,
+        gender = ?,
+        dob = ?,
+        address = ?,
+        postal_code = ?,
+        phone = ?,
+        born_in = ?,
+        updated_at = ? 
+        WHERE id = ? AND deleted_at IS NULL`;
+
+        const [updateCheck] = await connection.execute(sqlUpdateAccountData, [
+            accountData.firstName,
+            accountData.lastName,
+            accountData.email,
+            securePassword,
+            accountData.gender,
+            accountData.DOB,
+            accountData.address,
+            accountData.postalCode,
+            accountData.phone,
+            accountData.bornIn,
+            now,
+            userId
+        ]);
         connection.release();
 
-        res.status(201).send();
+        if (updateCheck.changedRows !== 1) {
+            return res.status(404).send();
+        }
+
+        res.status(204).send();
 
         try {
-            await sendWelcomeEmail(accountData.email);
+            await sendUpdatedDataEmail(accountData.email);
+
         } catch (e) {
             console.error(e);
         }
+
     } catch (e) {
         if (connection) {
             connection.release();
@@ -98,6 +111,7 @@ async function createAccount(req, res, next) {
 
         return res.status(500).send();
     }
+
 }
 
-module.exports = createAccount;
+module.exports = updateAccountData;
