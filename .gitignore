@@ -1,5 +1,5 @@
 # environment 
+.env
 
-node_modules
 # dependecy directories 
-
+node_modules
