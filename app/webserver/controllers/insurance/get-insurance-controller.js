@@ -39,7 +39,7 @@ async function getInsurances(req, res, next) {
                 policyDocument: insurance.eoi_url,
                 createdAt,
                 updatedAt,
-                id: udefined,
+                id: undefined,
                 user_id: undefined,
                 policy_number: undefined,
                 policy_type: undefined,
