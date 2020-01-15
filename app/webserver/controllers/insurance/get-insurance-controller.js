@@ -31,6 +31,7 @@ async function getInsurances(req, res, next) {
 
             return {
                 ...insurance,
+                policyId: insurance.id,
                 policyNumber: insurance.policy_number,
                 policyType: insurance.policy_type,
                 policyPrice: insurance.policy_price,
@@ -38,6 +39,7 @@ async function getInsurances(req, res, next) {
                 policyDocument: insurance.eoi_url,
                 createdAt,
                 updatedAt,
+                id: udefined,
                 user_id: undefined,
                 policy_number: undefined,
                 policy_type: undefined,
