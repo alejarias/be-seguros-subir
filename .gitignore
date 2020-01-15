@@ -1,6 +1,6 @@
 # environment 
-#*.env
+*.env2
 
 
 # dependecy directories 
-node_modules3
+node_modules
